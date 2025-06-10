@@ -1,73 +1,135 @@
-# Güvenli Dosya Transfer Sistemi
+# 🔐 Güvenli Dosya Transfer Sistemi
 
-Bu uygulama, güvenli dosya transferi için geliştirilmiş bir GUI tabanlı sistemdir. AES şifreleme, SHA-256 bütünlük kontrolü ve gelişmiş ağ özellikleri içerir.
+Bu proje, IP başlıklarını manuel olarak işleyerek, AES şifreleme ve SHA-256 bütünlük kontrolü kullanarak güvenli bir dosya transferi sağlar. Ayrıca gecikme, bant genişliği ve paket kaybı gibi ağ performans ölçümleri içerir. GUI arayüzü ile kullanıcı dostu bir deneyim sunar.
 
-## Özellikler
+---
 
-- 🔐 AES-256 şifreleme
-- 🔒 SHA-256 bütünlük kontrolü
-- 📤 Dosya parçalama ve birleştirme
-- 📊 Ağ performans ölçümü
-- 🛡️ IP başlık manipülasyonu
-- 📈 Bant genişliği testi
-- 🔍 Paket analizi
+## 📌 Proje Özellikleri
 
-## Gereksinimler
+### ✅ Temel İşlevler
 
-- Python 3.8 veya üzeri
-- Windows 10 veya Linux
-- Yönetici/root izinleri (ağ simülasyonu için)
+* 🔄 Dosya Gönderme/Alma (TCP ile)
+* 🔐 AES-256-CBC ile veri şifreleme
+* 🧾 SHA-256 hash ile bütünlük kontrolü
+* 📦 Manuel IP başlık düzenlemesi (TTL, DF, offset, checksum)
+* 🧩 Komut Protokolü: `SEND`, `RECEIVE`
 
-## Kurulum
+### 🔐 Güvenlik
 
-1. Gerekli Python paketlerini yükleyin:
+* Her dosya için rastgele üretilen anahtar ve IV
+* Şifreli verinin bütünlüğü için SHA-256 kontrolü
+* Scapy kullanılarak parçalama (fragmentation)
+* Elle IP checksum hesaplaması
+
+### 📡 Ağ Performans Ölçümleri
+
+* 📍 Gecikme (ping & TCP bağlantı süresi)
+* 📶 Bant genişliği (socket süreye dayalı test)
+* 📉 Paket kaybı ve gecikme simülasyonu (yazılımsal)
+* 🔍 Paket başlığı analizi (TTL, port, protokol, içerik)
+
+### 🖥 GUI (CustomTkinter)
+
+* Dosya seçimi, TTL/DF girişi, gönder/al butonları
+* Log ekranı ve durum göstergeleri
+* Ağ testi ve paket simülasyon paneli
+
+---
+
+## 📁 Proje Dosya Yapısı
+
 ```bash
-pip install -r requirements.txt
+├── alinacak_dosya/      # Alınan dosyanın klasörü
+├── gonderilecek_dosya/  # Gönderilecek dosyanın klasörü
+├── main.py              # Uygulama başlatma
+├── gui.py               # Grafik kullanıcı arayüzü
+├── security.py          # AES + SHA256 işlemleri
+├── server.py            # Dosya alıcı sunucu
+├── transfer.py          # IP başlık yönetimi ve veri gönderme
+├── network_tools.py     # Ping, bandwidth, analiz, simülasyon
+├── requirements.txt     # Gerekli yüklemeler
+├── README.md            # README
+└── assets/              # Görsel ve ekran görüntüleri
 ```
 
-2. Windows için ek gereksinimler:
-- iperf3 (https://iperf.fr/iperf-download.php)
-- Npcap (https://npcap.com/#download)
+---
 
-3. Linux için ek gereksinimler:
+## ⚙️ Kurulum
+
+### Gereksinimler
+
 ```bash
-sudo apt-get install iperf3
-sudo apt-get install tc
+pip install requirements.txt
 ```
 
-## Kullanım
+### Uygulama Başlatma
 
-1. Uygulamayı başlatın:
 ```bash
 python main.py
 ```
 
-2. Arayüz üzerinden:
-   - Dosya seçin
-   - IP adresi ve port girin
-   - "Bağlan" butonuna tıklayın
-   - Dosyayı gönderin veya alın
+GUI başlar ve sunucu arka planda çalışır.
 
-## Güvenlik Özellikleri
+---
 
-- AES-256 şifreleme ile dosya güvenliği
-- SHA-256 hash ile bütünlük kontrolü
-- IP başlık manipülasyonu koruması
-- Paket analizi ve güvenlik uyarıları
+## 📈 Örnek Kullanım
 
-## Ağ Özellikleri
+1. Dosya seçin
+2. IP adresi ve port girin
+3. IP başlık parametrelerini yapılandırın
+4. Gönder tuşuna tıklayın
+5. Sunucu veriyi alır → Şifresini çözer → Hash doğrular → Dosyayı kaydeder
 
-- Ping testi ile gecikme ölçümü
-- iperf3 ile bant genişliği testi
-- Paket kaybı ve gecikme simülasyonu
-- IP başlık analizi
+---
 
-## Notlar
+## 📷 Ekran Görüntüsü
 
-- Ağ simülasyonu için yönetici/root izinleri gereklidir
-- Windows'ta netsh, Linux'ta tc komutları kullanılır
-- iperf3 testleri için hedef makinede iperf3 sunucusu çalışmalıdır
+| Dosya Gönder Paneli      | Dosya Al Paneli             |
+| ------------------------ | --------------------------- |
+| ![](assets/dosya_gonder.png) | ![](assets/dosya_al.png) |
 
-## Lisans
+| Ağ Performans Testleri Paneli      |
+| ------------------------ |
+| ![](assets/ag_performans_testleri.png) |
 
-Bu proje MIT lisansı altında lisanslanmıştır. 
+---
+
+## 🚧 Kısıtlamalar
+
+* RSA veya sertifika tabanlı kimlik doğrulama yok
+* UDP ya da QUIC desteği henüz eklenmedi
+* Büyük dosyalar belleğe tamamen alınır (stream desteklenmiyor)
+
+---
+
+## 💡 Geliştirme Önerileri
+
+* Stream bazlı dosya okuma/yazma
+* RSA + AES hibrit şifreleme
+* QUIC, UDP protokol desteği
+* Gerçek zamanlı paket trafiği görselleştirme
+* X.509 sertifika tabanlı kimlik doğrulama
+
+---
+
+## 🧪 Kullanılan Teknolojiler
+
+* Python 3.x
+* Scapy
+* Cryptography
+* CustomTkinter
+* Wireshark, iPerf3, tc (analiz için)
+
+---
+
+## 👤 Geliştirici
+
+**İbrahim Semih Temiz**
+📧 [E-Posta](mailto:semhtemiz@gmail.com)
+🔗 [LinkedIn](https://linkedin.com/in/semihtemiz)
+
+---
+
+## 📝 Lisans
+
+MIT Lisansı © 2025 — Akademik kullanım içindir.
